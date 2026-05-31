@@ -187,6 +187,35 @@ See `docs/CODE_QUALITY_AUDIT.md` for tracked issues.
 - Backup endpoints exist, but a clear restore guide/helper flow for `data/` is still needed.
 - Include preflight checks: auth file, app DB, uploads, Chroma/memory, settings, secrets key, generated images.
 
+## Continual Improvement Loop
+
+The long-term operating model is continual improvement, not one-off fixes. Telemetry (see `docs/security-telemetry-visual-concepts.html`) produces traceable evidence; that evidence feeds a fixed loop that hardens the project over time while keeping every feature.
+
+### Priority order
+
+Apply this order to every improvement round, top to bottom:
+
+1. **Security first.** Boundary correctness: ownership, scopes, sanitization, SSRF/allowlists, admin gates. A security item outranks any feature or polish item competing for the same round.
+2. **New and improved features second.** Expand or refine capability only once the relevant security boundary for that surface is correct and tested.
+3. **Maintainability and UX QA/QC third.** Modular boundaries, reduced file size/coupling, smoke tests, degraded-state UX, accessibility, mobile/modal polish.
+
+### The loop, per finding
+
+Every observation moves through the same five stages and is recorded in an improvement ledger:
+
+1. **Observe** — capture the event with full provenance: raw signals, classifier rule + rule version, confidence, and code references, so the claim is replayable.
+2. **Decide** — turn the trace into an explicit policy/design decision instead of a guess.
+3. **Codify** — implement the decision as a small, modular unit with a clear interface. Prefer owner checks, explicit privileges, route scopes, sanitized rendering, and allowlists over broad bans (security by design, not by patch).
+4. **Verify** — land a regression test that locks the behavior in.
+5. **Preserve** — confirm no feature was lost. A change ships only when preserved behavior has a passing test, or there is a recorded, explicit decision to change it.
+
+### Invariants that gate every change
+
+- **No feature lost** without an explicit recorded decision.
+- **Safe by design**: narrow access to the correct owner/admin/scope rather than removing capability.
+- **Modular**: each guardrail is understandable and testable on its own.
+- **Traceable**: each fix links back to its provenance trace and forward to its regression test.
+
 ## Goal-Specific Recommendation
 
 For the next development round, do not expand the product surface. Fix the P0 security items, then add a small install/smoke harness that catches missing assets, failing app boot, broken auth setup, and broken bundled-service defaults. That will improve confidence across every existing feature more than another feature would.

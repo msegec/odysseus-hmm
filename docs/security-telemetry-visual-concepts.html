@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Odysseus Passive Safety Telemetry Concepts</title>
+  <style>
+    :root {
+      --bg: #171b20;
+      --panel: #20262d;
+      --panel-2: #252d36;
+      --panel-3: #111418;
+      --fg: #dce8ee;
+      --muted: #92a2ac;
+      --line: #3a4651;
+      --accent: #e06c75;
+      --cyan: #68c7d8;
+      --green: #62c984;
+      --amber: #d6a85d;
+      --blue: #7da4ee;
+      --violet: #b997e8;
+      --danger: #f07178;
+      --radius: 8px;
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--fg);
+      background: var(--bg);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(104, 199, 216, 0.04), transparent 280px),
+        var(--bg);
+    }
+
+    a { color: inherit; }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 820px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 15px;
+    }
+
+    .intent {
+      display: grid;
+      gap: 8px;
+      min-width: 280px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(32, 38, 45, 0.78);
+      box-shadow: var(--shadow);
+    }
+
+    .intent-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .intent-row strong {
+      color: var(--fg);
+      font-weight: 650;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+      padding: 3px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--fg);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+      padding-bottom: 2px;
+    }
+
+    .tabs a {
+      text-decoration: none;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px 11px;
+      background: rgba(255, 255, 255, 0.025);
+      font-size: 13px;
+    }
+
+    .tabs a:hover {
+      color: var(--fg);
+      border-color: var(--cyan);
+    }
+
+    .concept {
+      margin: 18px 0 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-3);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .concept-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 360px);
+      gap: 20px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+    }
+
+    .concept h2 {
+      margin: 0 0 7px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .why {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .decision {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(32, 38, 45, 0.72);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .decision strong {
+      color: var(--fg);
+      font-size: 13px;
+    }
+
+    .mock-app {
+      display: grid;
+      grid-template-columns: 228px minmax(0, 1fr);
+      min-height: 640px;
+      background: var(--bg);
+    }
+
+    .side {
+      border-right: 1px solid var(--line);
+      background: #15191e;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 5px 12px;
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    .nav-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav-label {
+      margin: 8px 6px 2px;
+      color: #70818b;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 34px;
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-item.active {
+      color: var(--fg);
+      background: rgba(104, 199, 216, 0.1);
+      border: 1px solid rgba(104, 199, 216, 0.28);
+    }
+
+    .badge {
+      min-width: 22px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      text-align: center;
+      font-size: 11px;
+      color: #111418;
+      background: var(--amber);
+      font-weight: 700;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+        var(--bg);
+      background-size: 36px 36px;
+    }
+
+    .bar {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(23, 27, 32, 0.88);
+    }
+
+    .bar-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .bar-title strong {
+      font-size: 17px;
+    }
+
+    .bar-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 32px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+      color: var(--fg);
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .btn.primary {
+      border-color: rgba(104, 199, 216, 0.52);
+      background: rgba(104, 199, 216, 0.13);
+    }
+
+    .content {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 88px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(32, 38, 45, 0.84);
+    }
+
+    .metric .num {
+      display: block;
+      margin-top: 8px;
+      font-size: 25px;
+      font-weight: 760;
+      line-height: 1;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(290px, 0.9fr);
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(32, 38, 45, 0.86);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      min-height: 46px;
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-head strong {
+      font-size: 14px;
+    }
+
+    .panel-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 25px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      padding: 3px 8px;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .chip.active {
+      color: var(--fg);
+      border-color: rgba(104, 199, 216, 0.52);
+      background: rgba(104, 199, 216, 0.1);
+    }
+
+    .event-list {
+      display: grid;
+    }
+
+    .event {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) 118px;
+      gap: 10px;
+      align-items: center;
+      min-height: 62px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(58, 70, 81, 0.72);
+      font-size: 12px;
+    }
+
+    .event:last-child { border-bottom: 0; }
+
+    .event-main {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .event-main strong {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-main span {
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .severity {
+      justify-self: start;
+      min-width: 76px;
+      text-align: center;
+      border-radius: 999px;
+      padding: 4px 7px;
+      font-weight: 700;
+      font-size: 11px;
+      color: #101418;
+    }
+
+    .sev-expected { background: var(--green); }
+    .sev-decision { background: var(--amber); }
+    .sev-danger { background: var(--danger); }
+    .sev-unknown { background: var(--violet); }
+
+    .path {
+      justify-self: end;
+      max-width: 118px;
+      color: var(--muted);
+      font-family: "Fira Code", ui-monospace, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .detail-body {
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .kv {
+      display: grid;
+      gap: 7px;
+    }
+
+    .kv-row {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr);
+      gap: 8px;
+      align-items: baseline;
+      font-size: 12px;
+    }
+
+    .kv-row span:first-child {
+      color: var(--muted);
+    }
+
+    code {
+      color: #b9dff2;
+      font-family: "Fira Code", ui-monospace, monospace;
+      font-size: 11px;
+      word-break: break-word;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 8px;
+    }
+
+    .time-step {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr);
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .time-step i {
+      width: 9px;
+      height: 9px;
+      margin-top: 4px;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 240px repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      overflow: auto;
+    }
+
+    .cell {
+      min-height: 52px;
+      padding: 9px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      align-content: center;
+      gap: 5px;
+      font-size: 12px;
+      background: rgba(32, 38, 45, 0.76);
+    }
+
+    .cell.head {
+      background: rgba(17, 20, 24, 0.95);
+      color: var(--fg);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+
+    .cell.rule {
+      color: var(--fg);
+      font-weight: 700;
+      background: rgba(17, 20, 24, 0.72);
+    }
+
+    .cell small {
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: #111418;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .status.log { background: var(--green); }
+    .status.ask { background: var(--amber); }
+    .status.block { background: var(--danger); }
+    .status.na { background: #6e7e89; color: #111418; }
+
+    .map {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .lane {
+      display: grid;
+      grid-template-columns: 130px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+
+    .lane-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .lane-line {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 42px;
+      padding: 7px;
+      border: 1px solid rgba(58, 70, 81, 0.74);
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.12);
+      overflow: auto;
+    }
+
+    .node {
+      flex: 0 0 auto;
+      min-width: 112px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 7px 8px;
+      background: rgba(37, 45, 54, 0.86);
+      font-size: 12px;
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--fg);
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .posture {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      padding: 12px;
+    }
+
+    .posture-card {
+      min-height: 132px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(37, 45, 54, 0.76);
+      display: grid;
+      align-content: start;
+      gap: 9px;
+    }
+
+    .posture-card strong {
+      font-size: 13px;
+    }
+
+    .posture-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .note {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(32, 38, 45, 0.72);
+      padding: 14px;
+    }
+
+    .note h3 {
+      margin: 0 0 7px;
+      font-size: 14px;
+    }
+
+    .note p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .footer {
+      margin: 24px 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1050px) {
+      .top,
+      .concept-head,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .posture,
+      .notes {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 14px; }
+      .mock-app { grid-template-columns: 1fr; }
+      .side { display: none; }
+      .bar { align-items: flex-start; flex-direction: column; }
+      .btn-row { justify-content: flex-start; }
+      .metrics,
+      .posture,
+      .notes {
+        grid-template-columns: 1fr;
+      }
+      .event {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .path {
+        justify-self: start;
+        max-width: 100%;
+      }
+      .matrix {
+        grid-template-columns: 180px repeat(4, 180px);
+      }
+      .lane {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div>
+        <h1>Passive Safety Telemetry Concepts</h1>
+        <p class="subtitle">
+          These concepts preserve the current local-first, power-user model. The first pass observes what the app actually does, classifies it, and makes decisions visible before blocking or removing any behavior. Each claim is traceable to the flow that produced it, and each decision feeds a continual-improvement loop that hardens the project over time without losing features.
+        </p>
+      </div>
+      <aside class="intent" aria-label="Design intent">
+        <div class="intent-row"><span>Mode</span><strong>Report only, first pass</strong></div>
+        <div class="intent-row"><span>Loop</span><strong>Observe &rarr; decide &rarr; codify &rarr; verify &rarr; preserve</strong></div>
+        <div class="intent-row"><span>Priority</span><strong>Security &rarr; features &rarr; maintainability/UX</strong></div>
+        <div class="intent-row"><span>Storage</span><strong>Local dev telemetry</strong></div>
+      </aside>
+    </header>
+
+    <nav class="tabs" aria-label="Concept navigation">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#event-detail">Event Detail</a>
+      <a href="#provenance">Provenance Trace</a>
+      <a href="#decision-matrix">Decision Matrix</a>
+      <a href="#posture">Container Posture</a>
+      <a href="#improvement">Improvement Ledger</a>
+      <a href="#implementation">Implementation Shape</a>
+    </nav>
+
+    <section class="concept" id="dashboard">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 1: Safety Recorder Dashboard</h2>
+          <p class="why">
+            The next useful UI is not a warning wall. It is an admin view that answers: what did Odysseus touch, was it expected for this single-user deployment, and what still needs a policy decision?
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Why this first</strong>
+          <span>It lets shell, MCP, internal services, research, local models, and scheduled tasks keep working while we gather evidence for later guardrails.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--green)"></span>local</span></div>
+          <div class="nav-group">
+            <div class="nav-label">Core</div>
+            <div class="nav-item">Chats</div>
+            <div class="nav-item">Research</div>
+            <div class="nav-item">Memory</div>
+            <div class="nav-item">Tasks</div>
+          </div>
+          <div class="nav-group">
+            <div class="nav-label">Admin</div>
+            <div class="nav-item active">Safety Events <span class="badge">18</span></div>
+            <div class="nav-item">Tools</div>
+            <div class="nav-item">System</div>
+          </div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Safety Events</strong>
+              <span>Passive recorder, last 24 hours</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Export JSON</button>
+              <button class="btn">Mark Expected</button>
+              <button class="btn primary">Open Decisions</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="metrics">
+              <div class="metric"><span class="label">Expected</span><span class="num" style="color: var(--green)">142</span></div>
+              <div class="metric"><span class="label">Needs decision</span><span class="num" style="color: var(--amber)">18</span></div>
+              <div class="metric"><span class="label">Dangerous</span><span class="num" style="color: var(--danger)">2</span></div>
+              <div class="metric"><span class="label">Unknown</span><span class="num" style="color: var(--violet)">7</span></div>
+              <div class="metric"><span class="label">No evidence found</span><span class="num" style="color: var(--blue)">5</span></div>
+            </div>
+            <div class="split">
+              <section class="panel">
+                <div class="panel-head">
+                  <strong>Recent event stream</strong>
+                  <span>Grouped by source and classification</span>
+                </div>
+                <div class="filter-row">
+                  <span class="chip active">All</span>
+                  <span class="chip"><span class="dot" style="color: var(--amber)"></span>Needs decision</span>
+                  <span class="chip"><span class="dot" style="color: var(--danger)"></span>Dangerous</span>
+                  <span class="chip">Network</span>
+                  <span class="chip">Tools</span>
+                  <span class="chip">Reports</span>
+                </div>
+                <div class="event-list">
+                  <div class="event">
+                    <span class="severity sev-decision">Decision</span>
+                    <span class="event-main"><strong>Agent shell command used host path</strong><span>source: assistant tool loop, confirmation: unavailable</span></span>
+                    <code class="path">/var/home/MrS</code>
+                  </div>
+                  <div class="event">
+                    <span class="severity sev-expected">Expected</span>
+                    <span class="event-main"><strong>Research called trusted SearXNG service</strong><span>target: Docker/private service, method: GET</span></span>
+                    <code class="path">searxng:8080</code>
+                  </div>
+                  <div class="event">
+                    <span class="severity sev-danger">Danger</span>
+                    <span class="event-main"><strong>Custom embedding endpoint targets metadata IP</strong><span>route: embeddings custom endpoint health check</span></span>
+                    <code class="path">169.254.169.254</code>
+                  </div>
+                  <div class="event">
+                    <span class="severity sev-unknown">Unknown</span>
+                    <span class="event-main"><strong>Generated report contains inline event handler</strong><span>scanner: html risk scanner, report: deep research</span></span>
+                    <code class="path">onerror=...</code>
+                  </div>
+                  <div class="event">
+                    <span class="severity sev-expected">Expected</span>
+                    <span class="event-main"><strong>Ollama request from local model picker</strong><span>target classified as trusted local LLM service</span></span>
+                    <code class="path">localhost:11434</code>
+                  </div>
+                </div>
+              </section>
+              <aside class="panel">
+                <div class="panel-head">
+                  <strong>Current posture</strong>
+                  <span>What changed?</span>
+                </div>
+                <div class="detail-body">
+                  <div class="kv">
+                    <div class="kv-row"><span>Scope</span><strong>Observe only</strong></div>
+                    <div class="kv-row"><span>Blocks</span><strong>0 enforced</strong></div>
+                    <div class="kv-row"><span>Trusted</span><code>Ollama, SearXNG, ChromaDB, ntfy, LAN/VPN, Docker</code></div>
+                    <div class="kv-row"><span>Policy</span><strong>Blacklist/whitelist options later</strong></div>
+                  </div>
+                  <div class="timeline">
+                    <div class="time-step"><i></i><span>Record event with source, route, user, token state, and target.</span></div>
+                    <div class="time-step"><i style="background: var(--amber)"></i><span>Classify as expected, needs-decision, dangerous, unknown, or no-evidence-found.</span></div>
+                    <div class="time-step"><i style="background: var(--blue)"></i><span>Show enough evidence for the admin to decide without hunting logs.</span></div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="event-detail">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 2: Event Detail Drawer</h2>
+          <p class="why">
+            Each event should explain why it exists. This prevents generic "security alert" fatigue and gives the owner concrete evidence: request path, token state, command, file path, network target, and suggested follow-up.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Why this matters</strong>
+          <span>Most intended behavior here is powerful by design. The UI should distinguish expected power use from genuinely surprising behavior.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--amber)"></span>review</span></div>
+          <div class="nav-item active">Safety Events <span class="badge">18</span></div>
+          <div class="nav-item">Settings</div>
+          <div class="nav-item">System</div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Event detail</strong>
+              <span>Generated report content risk</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Copy evidence</button>
+              <button class="btn">Create decision</button>
+              <button class="btn primary">Mark expected</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="split">
+              <section class="panel">
+                <div class="panel-head">
+                  <strong>Evidence</strong>
+                  <span>Captured locally</span>
+                </div>
+                <div class="detail-body">
+                  <div class="kv">
+                    <div class="kv-row"><span>Event</span><strong>Report scanner found active HTML</strong></div>
+                    <div class="kv-row"><span>Route</span><code>/research/reports/2026-06-01-local.html</code></div>
+                    <div class="kv-row"><span>Signals</span><code>&lt;script&gt;, onerror, javascript: URL, iframe</code></div>
+                    <div class="kv-row"><span>Source</span><strong>Deep Research generated output</strong></div>
+                    <div class="kv-row"><span>User intent</span><strong>Reports treated as trusted for now</strong></div>
+                    <div class="kv-row"><span>Action</span><strong>Log only, no sanitization block yet</strong></div>
+                  </div>
+                  <div class="panel" style="background: rgba(17,20,24,.8)">
+                    <div class="panel-head"><strong>Suggested interpretation</strong><span>Not enforcement</span></div>
+                    <div class="detail-body">
+                      <p class="why">
+                        This should be visible because report HTML runs in the app origin. It should not block first pass because the user answered that generated reports are not untrusted content in this deployment.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <aside class="panel">
+                <div class="panel-head">
+                  <strong>Decision controls</strong>
+                  <span>Future guardrail input</span>
+                </div>
+                <div class="detail-body">
+                  <span class="pill"><span class="dot" style="color: var(--green)"></span>Always log</span>
+                  <span class="pill"><span class="dot" style="color: var(--amber)"></span>Ask only if public sharing is enabled</span>
+                  <span class="pill"><span class="dot" style="color: var(--danger)"></span>Block if report origin becomes same-origin admin capable</span>
+                  <div class="timeline">
+                    <div class="time-step"><i style="background: var(--green)"></i><span>Keep current report workflow intact.</span></div>
+                    <div class="time-step"><i style="background: var(--amber)"></i><span>Record risky HTML features with exact snippets and file path.</span></div>
+                    <div class="time-step"><i style="background: var(--cyan)"></i><span>Use real events to decide whether CSP/sanitization needs a compatibility mode.</span></div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="provenance">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 3: Provenance Deep-Dive</h2>
+          <p class="why">
+            Every claim and log line must be answerable with one question: show me the exact flow that produced this. This view replays the path from trigger to classification, so a recorded event is reproducible evidence rather than an opinion.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Why this is the backbone</strong>
+          <span>Continual improvement depends on traceability. If we cannot replay why an event fired, we cannot safely codify a guardrail or a design fix from it.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--violet)"></span>trace</span></div>
+          <div class="nav-item active">Safety Events <span class="badge">18</span></div>
+          <div class="nav-item">Provenance</div>
+          <div class="nav-item">System</div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Provenance for one event</strong>
+              <span>Custom embedding endpoint targets metadata IP</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Copy trace</button>
+              <button class="btn">Replay capture</button>
+              <button class="btn primary">Promote to decision</button>
+            </div>
+          </div>
+          <div class="content">
+            <div class="split">
+              <section class="panel">
+                <div class="panel-head">
+                  <strong>Flow that produced the claim</strong>
+                  <span>Trigger to classification</span>
+                </div>
+                <div class="map">
+                  <div class="lane">
+                    <div class="lane-label">Trigger</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>POST /api/embeddings/endpoint</strong><span>caller: user "api", scope: chat</span></div>
+                    </div>
+                  </div>
+                  <div class="lane">
+                    <div class="lane-label">Instrumentation</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>record_security_event()</strong><span>hook: endpoint health check</span></div>
+                    </div>
+                  </div>
+                  <div class="lane">
+                    <div class="lane-label">Signals</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>URL host</strong><span>169.254.169.254</span></div>
+                      <div class="node"><strong>Range</strong><span>link-local metadata</span></div>
+                      <div class="node"><strong>Auth</strong><span>not admin-gated</span></div>
+                    </div>
+                  </div>
+                  <div class="lane">
+                    <div class="lane-label">Classifier</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>network-target rule</strong><span>metadata IP &rarr; dangerous</span></div>
+                      <div class="node"><strong>confidence</strong><span>high, exact match</span></div>
+                    </div>
+                  </div>
+                  <div class="lane">
+                    <div class="lane-label">Code refs</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>routes/embedding_routes.py</strong><span>set custom endpoint</span></div>
+                      <div class="node"><strong>AUDIT-004</strong><span>SSRF + admin gate</span></div>
+                    </div>
+                  </div>
+                  <div class="lane">
+                    <div class="lane-label">Suggested fix</div>
+                    <div class="lane-line">
+                      <div class="node"><strong>Admin-gate + URL allowlist</strong><span>keep custom endpoints for admins</span></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <aside class="panel">
+                <div class="panel-head">
+                  <strong>Trace metadata</strong>
+                  <span>Reproducible</span>
+                </div>
+                <div class="detail-body">
+                  <div class="kv">
+                    <div class="kv-row"><span>Trace id</span><code>evt_2026-06-01_0007</code></div>
+                    <div class="kv-row"><span>Captured</span><strong>Local only, no egress</strong></div>
+                    <div class="kv-row"><span>Inputs hash</span><code>sha256:9f2c…b41</code></div>
+                    <div class="kv-row"><span>Rule version</span><code>net-classifier v3</code></div>
+                    <div class="kv-row"><span>Replayable</span><strong>Yes, from stored signals</strong></div>
+                  </div>
+                  <div class="timeline">
+                    <div class="time-step"><i></i><span>Each step stores its raw input and the rule that consumed it.</span></div>
+                    <div class="time-step"><i style="background: var(--amber)"></i><span>Confidence and rule version travel with the claim, so old events stay interpretable after rules change.</span></div>
+                    <div class="time-step"><i style="background: var(--green)"></i><span>A trace can become a decision and then a regression test without re-investigation.</span></div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="decision-matrix">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 4: Policy Decision Matrix</h2>
+          <p class="why">
+            The answers in `todolist.md` say to keep internal services and all shipped features working, with blacklist/whitelist options later. This screen would turn observed behavior into explicit admin policy without guessing.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Why this reduces risk</strong>
+          <span>It avoids hardcoding security assumptions that break the user's actual local/VPN/Docker workflow.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--blue)"></span>policy</span></div>
+          <div class="nav-item">Safety Events</div>
+          <div class="nav-item active">Decisions <span class="badge">6</span></div>
+          <div class="nav-item">System</div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Decisions</strong>
+              <span>From observed use to future guardrails</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Import allowlist</button>
+              <button class="btn">Export policy</button>
+              <button class="btn primary">Simulate enforcement</button>
+            </div>
+          </div>
+          <div class="content">
+            <section class="panel">
+              <div class="panel-head">
+                <strong>Behavior classes</strong>
+                <span>Recommended first-pass classification</span>
+              </div>
+              <div class="matrix" role="table" aria-label="Policy decision matrix">
+                <div class="cell head">Behavior</div>
+                <div class="cell head">Expected</div>
+                <div class="cell head">Needs decision</div>
+                <div class="cell head">Dangerous later</div>
+                <div class="cell head">First-pass action</div>
+
+                <div class="cell rule">Internal network targets<small>Ollama, SearXNG, ChromaDB, ntfy, Docker, LAN/VPN</small></div>
+                <div class="cell"><span class="status log">Log</span><small>Trusted service match</small></div>
+                <div class="cell"><span class="status ask">Ask</span><small>New LAN host</small></div>
+                <div class="cell"><span class="status block">Block later</span><small>Metadata IP by default</small></div>
+                <div class="cell"><strong>Log only</strong><small>Classify targets now</small></div>
+
+                <div class="cell rule">API token access<small>Token-aware route, method, scope, mutation hint</small></div>
+                <div class="cell"><span class="status log">Log</span><small>/api/v1/chat with chat scope</small></div>
+                <div class="cell"><span class="status ask">Ask</span><small>Token reaches browser route</small></div>
+                <div class="cell"><span class="status block">Block later</span><small>Low-scope token mutates global state</small></div>
+                <div class="cell"><strong>Record</strong><small>No route behavior change</small></div>
+
+                <div class="cell rule">Agent tool actions<small>Shell, file reads/writes, MCP, network</small></div>
+                <div class="cell"><span class="status log">Log</span><small>Admin initiated local task</small></div>
+                <div class="cell"><span class="status ask">Ask</span><small>No confirmation state captured</small></div>
+                <div class="cell"><span class="status block">Block later</span><small>Destructive command without approval model</small></div>
+                <div class="cell"><strong>Capture context</strong><small>Command, cwd, source</small></div>
+
+                <div class="cell rule">Generated reports<small>Script, event handler, iframe, forms, raw HTML</small></div>
+                <div class="cell"><span class="status log">Log</span><small>User trusts reports currently</small></div>
+                <div class="cell"><span class="status ask">Ask</span><small>Public sharing or multi-user mode</small></div>
+                <div class="cell"><span class="status block">Block later</span><small>Same-origin script on shared install</small></div>
+                <div class="cell"><strong>Scan and show</strong><small>No sanitizer yet</small></div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="posture">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 5: Read-Only Container Posture Report</h2>
+          <p class="why">
+            This complements event telemetry by showing the runtime surface: UID/GID, mounts, Docker socket exposure, capabilities, writable host paths, and sensitive environment variables. It is evidence, not remediation.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Why it belongs in phase one</strong>
+          <span>The app may intentionally have broad local access. A posture report makes that visible before choosing blacklist or whitelist controls.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--cyan)"></span>system</span></div>
+          <div class="nav-item">Safety Events</div>
+          <div class="nav-item active">Posture</div>
+          <div class="nav-item">Settings</div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Container posture</strong>
+              <span>Read-only snapshot</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Download JSON</button>
+              <button class="btn primary">Refresh snapshot</button>
+            </div>
+          </div>
+          <div class="content">
+            <section class="panel">
+              <div class="panel-head">
+                <strong>Runtime facts</strong>
+                <span>Show unknowns honestly</span>
+              </div>
+              <div class="posture">
+                <div class="posture-card">
+                  <span class="status log">Observed</span>
+                  <strong>Identity</strong>
+                  <p>UID/GID, effective user, groups, writable home, and whether the process appears rootful.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status ask">Needs review</span>
+                  <strong>Writable mounts</strong>
+                  <p>Host paths visible to the container, write flags, and whether they overlap secrets, documents, or config.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status block">Sensitive</span>
+                  <strong>Docker socket</strong>
+                  <p>Presence of `/var/run/docker.sock` or compatible runtime sockets, recorded as high-impact local control.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status na">No evidence</span>
+                  <strong>Capabilities</strong>
+                  <p>Linux capability scan result, with explicit "not accessible" when the environment prevents inspection.</p>
+                </div>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <strong>Network target map</strong>
+                <span>Classifier output</span>
+              </div>
+              <div class="map">
+                <div class="lane">
+                  <div class="lane-label">Trusted local</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Ollama</strong><span>localhost:11434</span></div>
+                    <div class="node"><strong>ChromaDB</strong><span>docker private</span></div>
+                    <div class="node"><strong>SearXNG</strong><span>internal search</span></div>
+                  </div>
+                </div>
+                <div class="lane">
+                  <div class="lane-label">LAN / VPN</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Router</strong><span>private subnet</span></div>
+                    <div class="node"><strong>NAS</strong><span>private subnet</span></div>
+                    <div class="node"><strong>ntfy</strong><span>configured service</span></div>
+                  </div>
+                </div>
+                <div class="lane">
+                  <div class="lane-label">Dangerous later</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Metadata IP</strong><span>169.254.169.254</span></div>
+                    <div class="node"><strong>Unknown public</strong><span>needs context</span></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="improvement">
+      <div class="concept-head">
+        <div>
+          <h2>Concept 6: Continual Improvement Ledger</h2>
+          <p class="why">
+            Telemetry is only useful if observations turn into durable improvements. The ledger moves each finding through one fixed loop and records the result, so the project gets safer and cleaner over time without losing features.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>Priority order</strong>
+          <span>Security first, new and improved features second, maintainability and UX QA/QC third. Every loop preserves existing behavior unless an explicit decision changes it.</span>
+        </div>
+      </div>
+      <div class="mock-app">
+        <aside class="side">
+          <div class="brand">Odysseus <span class="pill"><span class="dot" style="color: var(--green)"></span>improve</span></div>
+          <div class="nav-item active">Improvement <span class="badge">9</span></div>
+          <div class="nav-item">Decisions</div>
+          <div class="nav-item">Tests</div>
+        </aside>
+        <main class="main">
+          <div class="bar">
+            <div class="bar-title">
+              <strong>Improvement ledger</strong>
+              <span>Observe, decide, codify, verify, preserve</span>
+            </div>
+            <div class="btn-row">
+              <button class="btn">Export ledger</button>
+              <button class="btn">Open invariants</button>
+              <button class="btn primary">Run regression suite</button>
+            </div>
+          </div>
+          <div class="content">
+            <section class="panel">
+              <div class="panel-head">
+                <strong>The loop</strong>
+                <span>Same five stages for every track</span>
+              </div>
+              <div class="map">
+                <div class="lane">
+                  <div class="lane-label" style="color: var(--danger)">Security first</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Observe</strong><span>Report XSS event (AUDIT-001)</span></div>
+                    <div class="node"><strong>Decide</strong><span>Sanitize + drop unsafe-inline</span></div>
+                    <div class="node"><strong>Codify</strong><span>bleach allowlist + nonce scripts</span></div>
+                    <div class="node"><strong>Verify</strong><span>XSS payload neutralized test</span></div>
+                    <div class="node"><strong>Preserve</strong><span>Report interactivity intact</span></div>
+                  </div>
+                </div>
+                <div class="lane">
+                  <div class="lane-label" style="color: var(--cyan)">Features second</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Observe</strong><span>New LAN host in events</span></div>
+                    <div class="node"><strong>Decide</strong><span>Add trusted-service entry</span></div>
+                    <div class="node"><strong>Codify</strong><span>Classifier config, not hardcode</span></div>
+                    <div class="node"><strong>Verify</strong><span>Classifier unit test</span></div>
+                    <div class="node"><strong>Preserve</strong><span>Existing targets unchanged</span></div>
+                  </div>
+                </div>
+                <div class="lane">
+                  <div class="lane-label" style="color: var(--amber)">Maintainability / UX QC</div>
+                  <div class="lane-line">
+                    <div class="node"><strong>Observe</strong><span>Duplicate chat.js module URL</span></div>
+                    <div class="node"><strong>Decide</strong><span>Single canonical specifier</span></div>
+                    <div class="node"><strong>Codify</strong><span>One import path + comment</span></div>
+                    <div class="node"><strong>Verify</strong><span>Smoke test one module URL</span></div>
+                    <div class="node"><strong>Preserve</strong><span>Chat behavior unchanged</span></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="panel">
+              <div class="panel-head">
+                <strong>Invariants that gate every change</strong>
+                <span>Security by nature, not by patch</span>
+              </div>
+              <div class="posture">
+                <div class="posture-card">
+                  <span class="status log">Always</span>
+                  <strong>No feature lost</strong>
+                  <p>A change ships only when the preserved behavior has a passing test or a recorded, explicit decision to change it.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status log">Always</span>
+                  <strong>Safe by design</strong>
+                  <p>Prefer owner checks, explicit privileges, route scopes, sanitized rendering, and allowlists over broad bans.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status ask">Prefer</span>
+                  <strong>Modular boundaries</strong>
+                  <p>Each guardrail lives in one small unit with a clear interface, so it can be understood and tested on its own.</p>
+                </div>
+                <div class="posture-card">
+                  <span class="status ask">Prefer</span>
+                  <strong>Traceable</strong>
+                  <p>Every codified fix links back to the provenance trace and forward to the regression test that locks it in.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <section class="concept" id="implementation">
+      <div class="concept-head">
+        <div>
+          <h2>Implementation Shape I Would Use</h2>
+          <p class="why">
+            The visual concepts map cleanly to a small backend helper and one admin-facing report. This keeps progress valuable without touching enforcement paths first.
+          </p>
+        </div>
+        <div class="decision">
+          <strong>First PR goal</strong>
+          <span>Add passive telemetry plumbing, local storage, and a simple admin JSON/HTML report. No blocking.</span>
+        </div>
+      </div>
+      <div class="notes">
+        <article class="note">
+          <h3>1. Central event recorder</h3>
+          <p>Add `security_events` storage plus `record_security_event(...)` with event type, source, user, route, method, classification, evidence, and local timestamp.</p>
+        </article>
+        <article class="note">
+          <h3>2. Low-risk instrumentation</h3>
+          <p>Instrument token route access, generated reports, network targets, agent/tool actions, and container posture snapshots. Keep the instrumentation passive.</p>
+        </article>
+        <article class="note">
+          <h3>3. Admin report surface</h3>
+          <p>Expose a read-only local admin report with filters for expected, needs-decision, dangerous, unknown, and no-evidence-found events.</p>
+        </article>
+        <article class="note">
+          <h3>4. Provenance in the schema</h3>
+          <p>Store each event with its raw signals, the rule and rule version that classified it, a confidence score, and code references, so any claim can be replayed and stays interpretable after rules change.</p>
+        </article>
+        <article class="note">
+          <h3>5. Improvement ledger</h3>
+          <p>Add a ledger that links a trace to its decision and to the regression test that locks the fix in. Order work security first, features second, maintainability/UX third, and never ship a change that drops a feature without an explicit recorded decision.</p>
+        </article>
+      </div>
+      <p class="footer">
+        Design note: these are concept mockups only. The first pass intentionally avoids changing app behavior, auth policy, sanitization, SSRF rules, shell access, MCP access, local model access, or internal service access. Its long-term aim is continual improvement: traceable evidence feeding a fixed observe&ndash;decide&ndash;codify&ndash;verify&ndash;preserve loop that hardens security by design while keeping every feature.
+      </p>
+    </section>
+  </div>
+</body>
+</html>
