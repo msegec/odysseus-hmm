@@ -1,3 +1,10 @@
+# Hey Pewds 👋
+
+Tiny changes vs your repo:
+- Passive safety telemetry ledger for observe-only security signals.
+- Admin-only telemetry endpoints for local event summary/history.
+- Embedding endpoint updates now record risky network targets without blocking.
+
 # Odysseus
 ───────────────────────────────────────────────
  ⊹ ࣪ ˖ ૮( ˶ᵔ ᵕ ᵔ˶ )っ  Odysseus vers. 1.0
