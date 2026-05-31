@@ -592,6 +592,12 @@ app.include_router(setup_email_routes())
 from routes.vault_routes import setup_vault_routes
 app.include_router(setup_vault_routes())
 
+# Passive safety telemetry — read-only admin ledger surface (observe stage).
+# See docs/security-telemetry-visual-concepts.html. No enforcement; admin-gated;
+# local-only data under data/ (gitignored).
+from routes.security_telemetry_routes import setup_security_telemetry_routes
+app.include_router(setup_security_telemetry_routes())
+
 # Contacts (CardDAV)
 from routes.contacts_routes import setup_contacts_routes
 app.include_router(setup_contacts_routes())
