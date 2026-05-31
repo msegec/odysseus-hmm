@@ -5,6 +5,16 @@ Tiny changes vs your repo:
 - Admin-only telemetry endpoints for local event summary/history.
 - Embedding endpoint updates now record risky network targets without blocking.
 
+Other goals and plans:
+- Keep the fork local-first and self-hostable without removing any fun bits.
+- Smoke-test fresh Docker installs across Linux, macOS, and Windows.
+- Audit integrations so broken or setup-heavy features are clearer.
+- Make Cookbook/model serving more reliable across different GPUs and hosts.
+- Improve degraded-state reporting for ChromaDB, SearXNG, email, ntfy, and model providers.
+- Keep tightening admin-tool safety with observe-first telemetry before enforcement.
+- Polish mobile/editor UX, accessibility, first-run hints, and confusing empty states.
+- Trim dead code and reduce repeated frontend scaffolding as features stabilize.
+
 # Odysseus
 ───────────────────────────────────────────────
  ⊹ ࣪ ˖ ૮( ˶ᵔ ᵕ ᵔ˶ )っ  Odysseus vers. 1.0
