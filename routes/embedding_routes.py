@@ -241,6 +241,26 @@ def setup_embedding_routes():
         if not url:
             raise HTTPException(400, "URL is required")
 
+        # Passive safety telemetry (observe-only; never blocks). This is the
+        # AUDIT-004 SSRF surface: the health check below POSTs to a caller-set
+        # URL. We record what the target *is* (e.g. a link-local metadata IP)
+        # so the owner gets replayable evidence before any enforcement is
+        # decided. Best-effort: a telemetry failure must never break saving an
+        # endpoint.
+        try:
+            from src.security_classifiers import classify_network_target
+            from src import security_telemetry as _tel
+            _tel.record_verdict(
+                classify_network_target(url),
+                event_type="network_target",
+                source="embedding.set_endpoint",
+                target=url,
+                route="/api/embeddings/endpoint",
+                method="POST",
+            )
+        except Exception:
+            pass
+
         # Quick health check
         try:
             import httpx
